@@ -9,10 +9,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
@@ -24,11 +25,10 @@ import java.util.List;
 
 import static ru.alextrof94.immersive_measurements.ModItems.updateItemModelFromLeds;
 
-public class TriangulatorItem extends Item {
-    public TriangulatorItem(Properties properties) {
-        super(properties.stacksTo(1));
+public class TriangulatorItem extends BlockItem {
+    public TriangulatorItem(Block block, Properties properties) {
+        super(block, properties.stacksTo(1));
     }
-
 
     @Override
     public @NotNull InteractionResult useOn(UseOnContext context) {
@@ -41,7 +41,8 @@ public class TriangulatorItem extends Item {
         Player player = context.getPlayer();
 
         ItemStack stack = context.getItemInHand();
-        List<GlobalPos> positions = new ArrayList<>(stack.getOrDefault(ModDataComponents.LODESTONE_POSITIONS.get(), List.of()));
+        List<GlobalPos> positions = new ArrayList<>(
+                stack.getOrDefault(ModDataComponents.LODESTONE_POSITIONS.get(), List.of()));
         validateLodestones(level, positions, player);
 
         if (level.isClientSide) {
@@ -52,8 +53,9 @@ public class TriangulatorItem extends Item {
             GlobalPos newPos = GlobalPos.of(level.dimension(), pos);
 
             if (positions.contains(newPos)) {
-                if(player != null)
-                    player.displayClientMessage(Component.literal("Магнетит уже записан").withStyle(ChatFormatting.GREEN), true);
+                if (player != null)
+                    player.displayClientMessage(
+                            Component.literal("Магнетит уже записан").withStyle(ChatFormatting.GREEN), true);
                 return InteractionResult.SUCCESS;
             }
 
@@ -69,7 +71,11 @@ public class TriangulatorItem extends Item {
             return InteractionResult.SUCCESS;
         }
 
-        return use(level, player, context.getHand());
+        if (context.getPlayer() != null && context.getPlayer().isShiftKeyDown()) {
+            return super.useOn(context);
+        }
+
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -87,12 +93,14 @@ public class TriangulatorItem extends Item {
         List<GlobalPos> positions = stack.getOrDefault(ModDataComponents.LODESTONE_POSITIONS.get(), List.of());
         if (positions.size() < 3) {
             validateLodestones(level, positions, player);
-            player.displayClientMessage(Component.literal("Недостаточно данных: нужно 3 магнетита.").withStyle(ChatFormatting.RED), true);
+            player.displayClientMessage(
+                    Component.literal("Недостаточно данных: нужно 3 магнетита.").withStyle(ChatFormatting.RED), true);
             return InteractionResult.SUCCESS;
         }
 
         if (level.dimension() != positions.getFirst().dimension()) {
-            player.displayClientMessage(Component.literal("Триангулятор откалиброван на другой мир").withStyle(ChatFormatting.RED), true);
+            player.displayClientMessage(
+                    Component.literal("Триангулятор откалиброван на другой мир").withStyle(ChatFormatting.RED), true);
             return InteractionResult.SUCCESS;
         }
 
@@ -106,9 +114,9 @@ public class TriangulatorItem extends Item {
         return InteractionResult.SUCCESS;
     }
 
-
     private boolean validateLodestones(Level level, List<GlobalPos> storedPositions, Player player) {
-        ItemStack stack = player.getMainHandItem(); // Предполагаем, что предмет в главной руке, или передавайте stack аргументом
+        ItemStack stack = player.getMainHandItem(); // Предполагаем, что предмет в главной руке, или передавайте stack
+                                                    // аргументом
         if (!(stack.getItem() instanceof TriangulatorItem)) {
             stack = player.getOffhandItem();
         }
@@ -117,7 +125,8 @@ public class TriangulatorItem extends Item {
         boolean changed = false;
         MinecraftServer server = level.getServer();
 
-        if (server == null) return false;
+        if (server == null)
+            return false;
 
         for (int i = validPositions.size() - 1; i >= 0; i--) {
             GlobalPos gp = validPositions.get(i);
@@ -127,7 +136,10 @@ public class TriangulatorItem extends Item {
             if (targetLevel == null || !targetLevel.getBlockState(gp.pos()).is(Blocks.LODESTONE)) {
                 validPositions.remove(i);
                 changed = true;
-                player.displayClientMessage(Component.literal("Сигнал потерян: Один из магнетитов разрушен или недоступен!").withStyle(ChatFormatting.RED), true);
+                player.displayClientMessage(
+                        Component.literal("Сигнал потерян: Один из магнетитов разрушен или недоступен!")
+                                .withStyle(ChatFormatting.RED),
+                        true);
             }
         }
 
@@ -147,7 +159,9 @@ public class TriangulatorItem extends Item {
         GlobalPos p3 = validPositions.get(2);
 
         if (p1.dimension() != p2.dimension() || p2.dimension() != p3.dimension()) {
-            player.displayClientMessage(Component.literal("Ошибка: Магнетиты находятся в разных измерениях!").withStyle(ChatFormatting.RED), true);
+            player.displayClientMessage(
+                    Component.literal("Ошибка: Магнетиты находятся в разных измерениях!").withStyle(ChatFormatting.RED),
+                    true);
             return false;
         }
 
@@ -158,7 +172,12 @@ public class TriangulatorItem extends Item {
         double minSq = Config.MIN_DISTANCE_BETWEEN_MAGNETIT.get() * Config.MIN_DISTANCE_BETWEEN_MAGNETIT.get();
 
         if (d1 < minSq || d2 < minSq || d3 < minSq) {
-            player.displayClientMessage(Component.literal("Ошибка интерференции: Магнетиты слишком близко друг к другу (<" + Config.MIN_DISTANCE_BETWEEN_MAGNETIT.get() + " блоков)!").withStyle(ChatFormatting.GOLD), true);
+            player.displayClientMessage(
+                    Component
+                            .literal("Ошибка интерференции: Магнетиты слишком близко друг к другу (<"
+                                    + Config.MIN_DISTANCE_BETWEEN_MAGNETIT.get() + " блоков)!")
+                            .withStyle(ChatFormatting.GOLD),
+                    true);
             return false;
         }
 

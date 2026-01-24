@@ -24,27 +24,28 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ImmersiveMeasurements {
     public static final String MODID = "immersive_measurements";
     public static final Logger LOGGER = LogUtils.getLogger();
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister
+            .create(Registries.CREATIVE_MODE_TAB, MODID);
 
-
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> IMMERSIVE_MEASUREMENTS_TAB = CREATIVE_MODE_TABS.register("immersive_measurements_tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.immersive_measurements"))
-            .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> ModItems.DEPTH_METER.get().getDefaultInstance())
-            .displayItems((parameters, output) -> {
-                output.accept(ModItems.DEPTH_METER.get());
-                output.accept(ModItems.DIGITAL_CLOCK.get());
-                output.accept(ModItems.TRIANGULATOR.get());
-            }).build());
-
-
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> IMMERSIVE_MEASUREMENTS_TAB = CREATIVE_MODE_TABS
+            .register("immersive_measurements_tab", () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.immersive_measurements"))
+                    .withTabsBefore(CreativeModeTabs.COMBAT)
+                    .icon(() -> ModItems.DEPTH_METER.get().getDefaultInstance())
+                    .displayItems((parameters, output) -> {
+                        output.accept(ModItems.DEPTH_METER.get());
+                        output.accept(ModItems.DIGITAL_CLOCK.get());
+                        output.accept(ModItems.TRIANGULATOR.get());
+                    }).build());
 
     public ImmersiveMeasurements(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
 
         CREATIVE_MODE_TABS.register(modEventBus);
 
+        ModBlocks.BLOCKS.register(modEventBus);
         ModItems.register(modEventBus);
+        ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModDataComponents.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);

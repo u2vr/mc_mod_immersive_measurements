@@ -3,7 +3,9 @@
   "item.immersive_measurements.depth_meter": "Глубиномер",
   "item.immersive_measurements.digital_clock": "Цифровые часы",
   "item.immersive_measurements.triangulator": "Триангулятор",
-
+  "block.immersive_measurements.depth_meter": "Глубиномер",
+  "block.immersive_measurements.digital_clock": "Цифровые часы",
+  "block.immersive_measurements.triangulator": "Триангулятор",
   "immersive_measurements.configuration.title": "Настройки иммерсивных измерений",
   "immersive_measurements.configuration.section.immersive.measurements.common.toml": "Настройки иммерсивных измерений",
   "immersive_measurements.configuration.section.immersive.measurements.common.toml.title": "Настройки иммерсивных измерений",

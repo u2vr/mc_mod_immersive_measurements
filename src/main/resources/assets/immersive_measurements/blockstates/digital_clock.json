@@ -1,0 +1,20 @@
+{
+    "variants": {
+        "facing=north": {
+            "model": "immersive_measurements:block/digital_clock",
+            "y": 90
+        },
+        "facing=east": {
+            "model": "immersive_measurements:block/digital_clock",
+            "y": 180
+        },
+        "facing=south": {
+            "model": "immersive_measurements:block/digital_clock",
+            "y": 270
+        },
+        "facing=west": {
+            "model": "immersive_measurements:block/digital_clock",
+            "y": 0
+        }
+    }
+}
