@@ -1,7 +1,7 @@
 package ru.alextrof94.immersive_measurements.items;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
+
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -17,14 +17,11 @@ public class SpeedometerItem extends BaseDisplayItem {
     }
 
     @Override
-    public void inventoryTick(@NotNull ItemStack stack, @NotNull ServerLevel level, @NotNull Entity entity, @javax.annotation.Nullable EquipmentSlot slot) {
-        Entity trackedEntity = entity.getVehicle() != null ? entity.getVehicle() : entity;
-        SpeedometerClientTracker.update(trackedEntity);
+    public void leftClickAction(Level level, @NotNull Player player) {
     }
 
     @Override
-    public void leftClickAction(Level level, @NotNull Player player) { }
-
-    @Override
-    public InteractionResult rightClickAction(Level level, @NotNull Player player, @Nullable BlockPos blockPos) { return InteractionResult.SUCCESS; }
+    public InteractionResult rightClickAction(Level level, @NotNull Player player, @Nullable BlockPos blockPos) {
+        return InteractionResult.SUCCESS;
+    }
 }

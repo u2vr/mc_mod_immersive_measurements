@@ -17,9 +17,19 @@ import ru.alextrof94.immersive_measurements.CustomData;
 import java.util.List;
 
 public class SpeedometerRenderer extends BaseDisplayRenderer {
-    protected float getScreenWidth() { return 0.4f; }
-    @Override protected float getScreenHeight() { return 0.3f; }
-    @Override protected Vector3f getScreenOffset() { return new Vector3f(0.55f, 0.08f, 0.5f); }
+    protected float getScreenWidth() {
+        return 0.4f;
+    }
+
+    @Override
+    protected float getScreenHeight() {
+        return 0.3f;
+    }
+
+    @Override
+    protected Vector3f getScreenOffset() {
+        return new Vector3f(0.55f, 0.08f, 0.5f);
+    }
 
     public static final Unbaked<SpeedometerRenderer> UNBAKED = new Unbaked<>(SpeedometerRenderer::new);
 
@@ -30,12 +40,16 @@ public class SpeedometerRenderer extends BaseDisplayRenderer {
 
         Entity targetEntity = mc.player;
 
-        if (targetEntity == null) return new CustomData(false, List.of("0.0"), 0f);
+        if (targetEntity == null)
+            return new CustomData(false, List.of("0.0"), 0f);
 
         Entity vehicle = targetEntity.getVehicle();
-        double speed = SpeedometerClientTracker.getSpeed(vehicle != null ? vehicle : targetEntity);
+        Entity trackedEntity = vehicle != null ? vehicle : targetEntity;
+        SpeedometerClientTracker.update(trackedEntity);
+        double speed = SpeedometerClientTracker.getSpeed(trackedEntity);
 
-        if (speed < 0.05) speed = 0;
+        if (speed < 0.05)
+            speed = 0;
 
         float progress = (float) (speed / 100.0);
         progress = Math.max(0, Math.min(1.0f, progress));
@@ -47,9 +61,12 @@ public class SpeedometerRenderer extends BaseDisplayRenderer {
     }
 
     @Override
-    public void render(@Nullable CustomData data, @NotNull ItemDisplayContext displayContext, @NotNull PoseStack poseStack, @NotNull MultiBufferSource buffer, int packedLight, int packedOverlay, boolean hasFoil) {
+    public void render(@Nullable CustomData data, @NotNull ItemDisplayContext displayContext,
+            @NotNull PoseStack poseStack, @NotNull MultiBufferSource buffer, int packedLight, int packedOverlay,
+            boolean hasFoil) {
         super.render(data, displayContext, poseStack, buffer, packedLight, packedOverlay, hasFoil);
-        if (data == null) return;
+        if (data == null)
+            return;
 
         poseStack.pushPose();
 
@@ -62,7 +79,6 @@ public class SpeedometerRenderer extends BaseDisplayRenderer {
 
         poseStack.popPose();
     }
-
 
     protected void drawArc(PoseStack poseStack, MultiBufferSource buffer, float progress, float width, float height) {
         VertexConsumer consumer = buffer.getBuffer(RenderType.gui());
@@ -83,13 +99,14 @@ public class SpeedometerRenderer extends BaseDisplayRenderer {
             float angle2 = (float) Math.PI - ((i + 1) / (float) segments) * (float) Math.PI;
 
             drawSegment(consumer, matrix,
-                    centerX + (float)Math.cos(angle1) * radius, centerY + (float)Math.sin(angle1) * radius,
-                    centerX + (float)Math.cos(angle2) * radius, centerY + (float)Math.sin(angle2) * radius,
+                    centerX + (float) Math.cos(angle1) * radius, centerY + (float) Math.sin(angle1) * radius,
+                    centerX + (float) Math.cos(angle2) * radius, centerY + (float) Math.sin(angle2) * radius,
                     thickness, r, g, b);
         }
     }
 
-    private void drawSegment(VertexConsumer consumer, Matrix4f matrix, float x1, float y1, float x2, float y2, float th, int r, int g, int b) {
+    private void drawSegment(VertexConsumer consumer, Matrix4f matrix, float x1, float y1, float x2, float y2, float th,
+            int r, int g, int b) {
         float dx = x2 - x1;
         float dy = y2 - y1;
         float len = (float) Math.sqrt(dx * dx + dy * dy);
